@@ -12,6 +12,7 @@ import framework.solution.SolvingAssistant;
 import framework.solution.StateSpaceSolver;
 import framework.problem.State;
 import framework.solution.AStarSolver;
+import framework.solution.Solver;
 import java.awt.Dimension;
 import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
@@ -259,9 +260,9 @@ public class ProblemGUI extends VBox{
     //make a new combo box for the benchmarks
        
         
-    //initialize the SSsolver and solution
-        SSsolver = new StateSpaceSolver(problem,true);
-        solution = SSsolver.getSolution();
+    //initialize the whatSolver and solution
+        whatSolver = new StateSpaceSolver(problem,true);
+        solution = whatSolver.getSolution();
         
     
     
@@ -279,6 +280,8 @@ public class ProblemGUI extends VBox{
             updateDisplay();
         });
     
+        statistics= new Label(whatSolver.getStatistics().toString());
+        
         // makes new button to auto solve the puzzels
         solve = new Button("Solve");
         solve.setFont(Font.font("Dejavu Sans Mono", 12));
@@ -289,23 +292,27 @@ public class ProblemGUI extends VBox{
         solve.setOnAction(e -> {
         problem.setInitialState(problem.getCurrentState());
             if (searchType.getValue() == "Breadth-First Search"){
-               SSsolver = new StateSpaceSolver(this.problem, true);
-               SSsolver.solve(); 
-               solution = SSsolver.getSolution();
+               whatSolver = new StateSpaceSolver(this.problem, true);
+               whatSolver.solve(); 
+               solution = whatSolver.getSolution();
                solution.next();
+               statistics.textProperty().setValue(whatSolver.getStatistics().toString());
             }else if(searchType.getValue() == "Depth-First Search"){
-               SSsolver = new StateSpaceSolver(this.problem, false);
-               SSsolver.solve();
-               solution = SSsolver.getSolution();
+               whatSolver = new StateSpaceSolver(this.problem, false);
+               whatSolver.solve();
+               solution = whatSolver.getSolution();
                solution.next();
+               statistics.textProperty().setValue(whatSolver.getStatistics().toString());
             }else if(searchType.getValue() == "A* Search"){
-               /*ASsolver = new AStarSolver(problem);
+               
                b = (Benchmark) BenchChoice.getValue();
                problem.setCurrentState(b.getState());
                problem.setInitialState(b.getState());
-               ASsolver.solve();
-               solution = ASsolver.getSolution();
-               solution.next();*/
+               whatSolver = new AStarSolver(this.problem);
+               whatSolver.solve();
+               solution = whatSolver.getSolution();
+               solution.next();
+               statistics.textProperty().setValue(whatSolver.getStatistics().toString());
             }
             solver.reset();
             next.setDisable(false);
@@ -361,7 +368,7 @@ public class ProblemGUI extends VBox{
         statLabel.setPadding(new Insets(Pad));
     
     //makes the stats sting and puts it in a box
-        statistics= new Label(SSsolver.getStatistics().toString());
+        
         statistics.setFont(Font.font(java.awt.Font.MONOSPACED, 17));
         statistics.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
                                  CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -399,17 +406,17 @@ public class ProblemGUI extends VBox{
     private final HBox stateBox, buttonHbox,messageBox;
     private final VBox curStateBox, buttonBox, finalStateBox, resetBox,statBox;
     private final ComboBox<String> searchType;
-    private StateSpaceSolver SSsolver;
+    
     private final double width = 150;
     private final double height = 30;
     private final double Pad;
     private final Button reset, b1, b2, b3, b4,b5,b6,b7,b8,b9, solve, next;
     private final Problem problem;
     private Solution solution;
-    private AStarSolver ASsolver;
+    
     private ChoiceBox BenchChoice;
     private Benchmark b;
-    
+    private Solver whatSolver;
     
     private ChoiceBox makeBenchmark(){
         BenchChoice = new ChoiceBox<>(FXCollections.observableArrayList(problem.getBenchmarks()));
@@ -424,7 +431,7 @@ public class ProblemGUI extends VBox{
         
         curState.textProperty().setValue(problem.getCurrentState().toString());
         buttonLabel.textProperty().setValue("Number of Moves: " + solver.getMoveCount());
-        statistics.textProperty().setValue(SSsolver.getStatistics().toString());
+        statistics.textProperty().setValue(whatSolver.getStatistics().toString());
         message.textProperty().setValue("");
         if(solver.isProblemSolved()){
                 message.textProperty().setValue("Congratulations! You have solved the problem!");

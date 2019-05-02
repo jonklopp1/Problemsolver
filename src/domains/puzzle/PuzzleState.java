@@ -217,8 +217,8 @@ public class PuzzleState implements State {
     
     @Override
     public int getHeuristic(State goal) {
-        return tilesOutOfPlace(this, goal);
-//        return sumManhattan(this, goal);
+ //       return tilesOutOfPlace(this, goal);
+        return sumManhattan(this, goal);
     }
     
     public static int tilesOutOfPlace(State current, State goal) {
@@ -226,11 +226,11 @@ public class PuzzleState implements State {
         PuzzleState g = (PuzzleState) goal;
         PuzzleState c = (PuzzleState) current;
         for(int j = 1; j<9; j++){
-           System.out.println(g.getLocation(j).toString());
-           System.out.println(c.getLocation(j).toString());
+           //System.out.println(g.getLocation(j).toString());
+          //System.out.println(c.getLocation(j).toString());
             if (!g.getLocation(j).toString().equals(c.getLocation(j).toString()) ){
                count++;
-               System.out.println(count);
+               //System.out.println(count);
            }
                
         }

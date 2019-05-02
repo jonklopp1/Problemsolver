@@ -27,7 +27,7 @@ public class AStarSolver extends StateSpaceSolver {
      */
     public AStarSolver(Problem problem) {
         super(problem, false);
-        Pque = new PriorityQueue<Vertex>(getComparator());
+        super.setQueue(new PriorityQueue<Vertex>(getComparator()));
         
         
     }
@@ -38,7 +38,7 @@ public class AStarSolver extends StateSpaceSolver {
      */
     @Override
     public void add(Vertex v) {
-        Pque.add(v);
+        super.getQueue().add(v);
             
         
     }
@@ -50,26 +50,17 @@ public class AStarSolver extends StateSpaceSolver {
      * @return the comparator object
      */
     public final Comparator<Vertex> getComparator() {
-        return new stateComparator();
+        return (v1, v2) -> {
+        State goal = getProblem().getFinalState();
+        State s1 = (State)v1.getData();
+        State s2 = (State)v2.getData();
+        int h1 = s1.getHeuristic(goal);
+        int h2 = s2.getHeuristic(goal);
+        int d1 = v1.getDistance();
+        int d2 = v2.getDistance();
+        return Integer.compare(h1+d1, h2+d2);
+        };
     }
-    
-    public class stateComparator implements Comparator<Vertex>{
-
-        @Override
-        public int compare(Vertex o1, Vertex o2) {
-            State v1 = (State) o1.getData();
-            State v2 = (State) o2.getData();
-            int i1 = v1.getHeuristic(problem.getFinalState());
-            int i2 = v2.getHeuristic(problem.getFinalState());
-            
-            if (i1<i2){
-                return 1;
-            }else if(i1>i2){
-                return -1;
-            }
-            return 0;
-        }
-    }
-    
-    private final PriorityQueue Pque;
 }
+    
+   
